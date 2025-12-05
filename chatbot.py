@@ -14,6 +14,10 @@ import torch
 class TextGenerationChatbot:
     """A chatbot powered by GPT-2 for text generation."""
     
+    # Configuration constants
+    MAX_HISTORY_WORDS = 200
+    ADDITIONAL_RESPONSE_LENGTH = 50
+    
     def __init__(self, model_name="gpt2"):
         """
         Initialize the chatbot with a pre-trained model.
@@ -70,6 +74,29 @@ class TextGenerationChatbot:
         generated_text = self.tokenizer.decode(output[0], skip_special_tokens=True)
         return generated_text
     
+    def _extract_bot_response(self, full_response, prompt):
+        """
+        Extract just the chatbot's response from the generated text.
+        
+        Args:
+            full_response (str): The full generated text including the prompt.
+            prompt (str): The original prompt used for generation.
+        
+        Returns:
+            str: The extracted chatbot response.
+        """
+        # Extract just the chatbot's response
+        if "Chatbot:" in full_response:
+            response_parts = full_response.split("Chatbot:")
+            if len(response_parts) > 1:
+                bot_response = response_parts[-1].split("You:")[0].strip()
+            else:
+                bot_response = response_parts[0].strip()
+        else:
+            bot_response = full_response[len(prompt):].split("You:")[0].strip()
+        
+        return bot_response
+    
     def chat(self):
         """Run an interactive chat session."""
         print("=" * 60)
@@ -111,27 +138,23 @@ class TextGenerationChatbot:
                 
                 # Generate response
                 print("Chatbot: ", end="", flush=True)
-                response = self.generate_response(prompt, max_length=len(prompt.split()) + 50)
+                response = self.generate_response(
+                    prompt, 
+                    max_length=len(prompt.split()) + self.ADDITIONAL_RESPONSE_LENGTH
+                )
                 
-                # Extract just the chatbot's response
-                if "Chatbot:" in response:
-                    response_parts = response.split("Chatbot:")
-                    if len(response_parts) > 1:
-                        bot_response = response_parts[-1].split("You:")[0].strip()
-                    else:
-                        bot_response = response_parts[0].strip()
-                else:
-                    bot_response = response[len(prompt):].split("You:")[0].strip()
+                # Extract just the chatbot's response using helper method
+                bot_response = self._extract_bot_response(response, prompt)
                 
                 print(bot_response)
                 print()
                 
                 # Update conversation history (keep last few exchanges)
                 conversation_history += f"\nYou: {user_input}\nChatbot: {bot_response}"
-                # Keep only the last 200 words to avoid context length issues
+                # Keep only the last MAX_HISTORY_WORDS to avoid context length issues
                 words = conversation_history.split()
-                if len(words) > 200:
-                    conversation_history = " ".join(words[-200:])
+                if len(words) > self.MAX_HISTORY_WORDS:
+                    conversation_history = " ".join(words[-self.MAX_HISTORY_WORDS:])
                 
             except KeyboardInterrupt:
                 print("\n\nChatbot: Goodbye! Have a great day!")
