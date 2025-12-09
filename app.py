@@ -5,8 +5,22 @@ A simple web application that generates marketing blurbs for products using LLM.
 
 from flask import Flask, render_template, request, jsonify
 from transformers import pipeline
+import html
 
 app = Flask(__name__)
+
+# Security: Disable debug mode by default in production
+app.config['DEBUG'] = False
+
+# Security: Add response headers for protection
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to all responses"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Content-Security-Policy'] = "default-src 'self' 'unsafe-inline'"
+    return response
 
 # Generation parameters
 MAX_LENGTH = 50
@@ -38,6 +52,14 @@ def generate_description():
         
         if not product_name or not category:
             return jsonify({'error': 'Product name and category are required'}), 400
+        
+        # Security: Validate input length to prevent abuse
+        if len(product_name) > 100 or len(category) > 100:
+            return jsonify({'error': 'Input too long. Maximum 100 characters allowed.'}), 400
+        
+        # Security: Sanitize inputs to prevent XSS
+        product_name = html.escape(product_name)
+        category = html.escape(category)
         
         # Create a prompt for generating marketing copy
         prompt = f"Write a compelling one-line marketing description for {product_name}, a {category} product: "
