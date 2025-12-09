@@ -5,9 +5,12 @@ A simple web application that generates marketing blurbs for products using LLM.
 
 from flask import Flask, render_template, request, jsonify
 from transformers import pipeline
-import os
 
 app = Flask(__name__)
+
+# Generation parameters
+MAX_LENGTH = 50
+TEMPERATURE = 0.7
 
 # Initialize the text generation pipeline with a smaller model
 generator = None
@@ -41,7 +44,7 @@ def generate_description():
         
         # Generate the description
         gen = get_generator()
-        result = gen(prompt, max_length=50, num_return_sequences=1, temperature=0.7)
+        result = gen(prompt, max_length=MAX_LENGTH, num_return_sequences=1, temperature=TEMPERATURE)
         
         # Extract the generated text and clean it up
         generated_text = result[0]['generated_text']
