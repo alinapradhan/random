@@ -9,9 +9,6 @@ import html
 
 app = Flask(__name__)
 
-# Security: Disable debug mode by default in production
-app.config['DEBUG'] = False
-
 # Security: Add response headers for protection
 @app.after_request
 def add_security_headers(response):
@@ -92,5 +89,5 @@ if __name__ == '__main__':
     # Debug mode should only be used in development
     # Set FLASK_DEBUG=0 or False in production
     import os
-    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() in ('true', '1', 't')
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
     app.run(debug=debug_mode, host='0.0.0.0', port=5000)
