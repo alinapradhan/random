@@ -39,6 +39,12 @@ http://localhost:5000
 
 4. Or try one of the sample prompts by clicking on them
 
+**Note**: By default, the app runs in debug mode for development. In production, set the environment variable `FLASK_DEBUG=0` before starting the app:
+```bash
+export FLASK_DEBUG=0
+python app.py
+```
+
 ## Sample Prompts
 
 - **EcoBottle** (reusable water bottle)

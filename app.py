@@ -77,4 +77,8 @@ def get_samples():
     return jsonify(samples)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Debug mode should only be used in development
+    # Set FLASK_DEBUG=0 or False in production
+    import os
+    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() in ('true', '1', 't')
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
