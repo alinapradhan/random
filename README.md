@@ -1,14 +1,14 @@
-# Product Description Generator 🚀
+# Product Description Generator 
 
 A simple web application that generates compelling one-line marketing blurbs for products using AI/LLM technology.
 
 ## Features
 
-- 📝 **Form Interface**: Easy-to-use web form for entering product name and category
-- 🤖 **AI-Powered**: Uses Hugging Face transformers (DistilGPT2) for text generation
-- 🎯 **Sample Prompts**: Pre-loaded sample products to test quickly
-- 💫 **Beautiful UI**: Modern, responsive design with gradient styling
-- ⚡ **Fast**: Lightweight model for quick response times
+-  **Form Interface**: Easy-to-use web form for entering product name and category
+-  **AI-Powered**: Uses Hugging Face transformers (DistilGPT2) for text generation
+-  **Sample Prompts**: Pre-loaded sample products to test quickly
+-  **Beautiful UI**: Modern, responsive design with gradient styling
+-  **Fast**: Lightweight model for quick response times
 
 ## Installation
 
