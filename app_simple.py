@@ -3,7 +3,7 @@ Simplified Product Description Generator for Testing
 Uses mock generation instead of downloading large models
 """
 
-from typing import Tuple, List, Dict, Any
+from typing import Tuple
 from flask import Flask, render_template, request, jsonify, Response
 import random
 import html

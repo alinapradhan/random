@@ -3,7 +3,7 @@ Product Description Generator
 A simple web application that generates marketing blurbs for products using LLM.
 """
 
-from typing import Tuple, Dict, Any
+from typing import Tuple
 from flask import Flask, render_template, request, jsonify, Response
 from transformers import pipeline
 import html
