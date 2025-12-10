@@ -3,7 +3,8 @@ Simplified Product Description Generator for Testing
 Uses mock generation instead of downloading large models
 """
 
-from flask import Flask, render_template, request, jsonify
+from typing import Tuple, List, Dict, Any
+from flask import Flask, render_template, request, jsonify, Response
 import random
 import html
 
@@ -11,7 +12,7 @@ app = Flask(__name__)
 
 # Security: Add response headers for protection
 @app.after_request
-def add_security_headers(response):
+def add_security_headers(response: Response) -> Response:
     """Add security headers to all responses"""
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
@@ -31,19 +32,19 @@ TEMPLATES = [
     "Meet {product}, the {category} that seamlessly blends functionality with sophistication.",
 ]
 
-def generate_mock_description(product_name, category):
+def generate_mock_description(product_name: str, category: str) -> str:
     """Generate a mock description using templates"""
     template = random.choice(TEMPLATES)
     description = template.format(product=product_name, category=category)
     return description
 
 @app.route('/')
-def index():
+def index() -> str:
     """Render the main form page"""
     return render_template('index.html')
 
 @app.route('/generate', methods=['POST'])
-def generate_description():
+def generate_description() -> Tuple[Response, int]:
     """Generate product description based on product name and category"""
     try:
         data = request.get_json()
@@ -74,7 +75,7 @@ def generate_description():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/samples', methods=['GET'])
-def get_samples():
+def get_samples() -> Response:
     """Return sample prompts for testing"""
     samples = [
         {'product_name': 'EcoBottle', 'category': 'reusable water bottle'},

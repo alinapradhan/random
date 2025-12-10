@@ -3,7 +3,8 @@ Product Description Generator
 A simple web application that generates marketing blurbs for products using LLM.
 """
 
-from flask import Flask, render_template, request, jsonify
+from typing import Tuple, Dict, Any
+from flask import Flask, render_template, request, jsonify, Response
 from transformers import pipeline
 import html
 
@@ -11,7 +12,7 @@ app = Flask(__name__)
 
 # Security: Add response headers for protection
 @app.after_request
-def add_security_headers(response):
+def add_security_headers(response: Response) -> Response:
     """Add security headers to all responses"""
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
@@ -26,7 +27,7 @@ TEMPERATURE = 0.7
 # Initialize the text generation pipeline with a smaller model
 generator = None
 
-def get_generator():
+def get_generator() -> pipeline:
     """Lazy load the text generator"""
     global generator
     if generator is None:
@@ -35,12 +36,12 @@ def get_generator():
     return generator
 
 @app.route('/')
-def index():
+def index() -> str:
     """Render the main form page"""
     return render_template('index.html')
 
 @app.route('/generate', methods=['POST'])
-def generate_description():
+def generate_description() -> Tuple[Response, int]:
     """Generate product description based on product name and category"""
     try:
         data = request.get_json()
@@ -84,7 +85,7 @@ def generate_description():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/samples', methods=['GET'])
-def get_samples():
+def get_samples() -> Response:
     """Return sample prompts for testing"""
     samples = [
         {'product_name': 'EcoBottle', 'category': 'reusable water bottle'},
