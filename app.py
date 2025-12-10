@@ -5,7 +5,7 @@ A simple web application that generates marketing blurbs for products using LLM.
 
 from typing import Tuple
 from flask import Flask, render_template, request, jsonify, Response
-from transformers import pipeline
+from transformers import pipeline, Pipeline
 import html
 
 app = Flask(__name__)
@@ -27,7 +27,7 @@ TEMPERATURE = 0.7
 # Initialize the text generation pipeline with a smaller model
 generator = None
 
-def get_generator() -> pipeline:
+def get_generator() -> Pipeline:
     """Lazy load the text generator"""
     global generator
     if generator is None:
