@@ -5,8 +5,19 @@ Uses mock generation instead of downloading large models
 
 from flask import Flask, render_template, request, jsonify
 import random
+import html
 
 app = Flask(__name__)
+
+# Security: Add response headers for protection
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to all responses"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Content-Security-Policy'] = "default-src 'self' 'unsafe-inline'"
+    return response
 
 # Mock descriptions for quick testing
 TEMPLATES = [
@@ -42,6 +53,14 @@ def generate_description():
         if not product_name or not category:
             return jsonify({'error': 'Product name and category are required'}), 400
         
+        # Security: Validate input length to prevent abuse
+        if len(product_name) > 100 or len(category) > 100:
+            return jsonify({'error': 'Input too long. Maximum 100 characters allowed.'}), 400
+        
+        # Security: Sanitize inputs to prevent XSS
+        product_name = html.escape(product_name)
+        category = html.escape(category)
+        
         # Generate the description using mock generator
         description = generate_mock_description(product_name, category)
         
@@ -70,5 +89,5 @@ if __name__ == '__main__':
     # Debug mode should only be used in development
     # Set FLASK_DEBUG=0 or False in production
     import os
-    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() in ('true', '1', 't')
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
     app.run(debug=debug_mode, host='0.0.0.0', port=5000)
